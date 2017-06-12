@@ -3,10 +3,14 @@ using System.Collections;
 
 public class Health : MonoBehaviour {
 
-	public float currentHealth = 100.0f;
+	[SerializeField] private float currentHealth = 100.0f;
 
 	public void receiveDamage(float hitPoints) {
 		currentHealth -= hitPoints;
+	}
+
+	public float GetCurrentHealth(){
+		return currentHealth;
 	}
 	
 	public void Die(){

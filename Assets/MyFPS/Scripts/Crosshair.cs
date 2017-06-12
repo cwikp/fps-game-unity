@@ -3,8 +3,8 @@ using System.Collections;
 
 public class Crosshair : MonoBehaviour {
 
-	public Texture2D crosshairTexture; 
-	public bool isVisible = true;
+	[SerializeField] private Texture2D crosshairTexture; 
+	[SerializeField] private bool isVisible = true;
 	
 	private Rect position; 
 	
@@ -20,4 +20,5 @@ public class Crosshair : MonoBehaviour {
 			GUI.DrawTexture (position, crosshairTexture); 
 		}
 	}
+	
 }

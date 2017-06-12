@@ -3,19 +3,10 @@ using System.Collections;
 
 public class BigGunPropeller : MonoBehaviour {
 
-	public float speed = 10f;
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+	[SerializeField] private float speed = 10f;
 		
 	void FixedUpdate () {
 		transform.Translate (transform.forward * speed * Time.deltaTime, Space.World);
 	}
+	
 }

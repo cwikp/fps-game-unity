@@ -4,54 +4,81 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
 
-	public CharacterController characterController;
-	public float speedMoving = 10.0f;
-	public float jumpHeight = 10.0f;
-	public float currentJumpHeight = 0f;
-	public float speedRunning = 15.0f;
+	[SerializeField] private CharacterController characterController;
+	[SerializeField] private GameObject hudObject;
 
-	public float mouseSensitivity = 3.0f;
-	public float mouseLimit = 90.0f;
-	public float mouseY = 0f;
+	[SerializeField] private float speedMoving = 10.0f;
+	[SerializeField] private float jumpHeight = 10.0f;
+	[SerializeField] private float speedRunning = 15.0f;
 
+	[SerializeField] private float mouseSensitivity = 3.0f;
+	[SerializeField] private float mouseLimit = 90.0f;
 
-	// Use this for initialization
+	private Hud hud;
+	private float currentJumpHeight = 0f;
+	private float currentHealth = 0.0f;
+	private float mouseY = 0f;
+
 	void Start () {
-		characterController = GetComponent<CharacterController> ();
-	
+		characterController = GetComponent<CharacterController>();
+		hud = hudObject.GetComponent<Hud>();
 	}
 	
-	// Update is called once per frame
 	void Update () {
-
 		if (isAlive ()) {
 			keyboardMovement ();
 			mouseMovement ();
 		} else {  
 			StartCoroutine (PlayerDies());
 		}
-	
+	}
+
+	bool isAlive(){
+		Health health = gameObject.GetComponent<Health> ();
+		DisplayCurrentHealth(health);
+
+		if (health != null) {
+			return health.isAlive();
+		}
+
+		return true;
+	}
+
+	private void DisplayCurrentHealth(Health health){
+		float healthValue = health.GetCurrentHealth();
+		if (currentHealth != healthValue){
+			currentHealth = healthValue;
+			hud.SetHealthPercentage(healthValue / 10);
+		}
 	}
 
 	private IEnumerator PlayerDies(){
 		Camera.main.transform.localRotation = Quaternion.Euler (90, 90, 0);
 		yield return new WaitForSeconds(5);
-		SceneManager.LoadScene("menu");
+		SceneManager.LoadScene("newmenu");
 	}
 
 	private void keyboardMovement(){
 		float verticalMovement = Input.GetAxis ("Vertical") * speedMoving;
 		float horizontalMovement = Input.GetAxis ("Horizontal") * speedMoving;
 
-		if (characterController.isGrounded && Input.GetButton ("Jump"))
+		if (characterController.isGrounded && Input.GetButton ("Jump")){
 			currentJumpHeight = jumpHeight;
-		else if (!characterController.isGrounded)
+		} else if (!characterController.isGrounded){
 			currentJumpHeight += Physics.gravity.y * Time.deltaTime;
+		}
+		
+		// ugly hack for super jumping :D
+		if (Input.GetKeyDown ("k")){
+			currentJumpHeight = 50.0f;
+		}
 
-		if (Input.GetKeyDown ("left shift"))
+		if (Input.GetKeyDown ("left shift")){
 			speedMoving += speedRunning;
-		else if (Input.GetKeyUp ("left shift"))
+		}
+		else if (Input.GetKeyUp ("left shift")){
 			speedMoving -= speedRunning;
+		}
 
 		Vector3 movement = new Vector3 (horizontalMovement, currentJumpHeight, verticalMovement);
 		movement = transform.rotation * movement;
@@ -69,13 +96,4 @@ public class PlayerController : MonoBehaviour {
 
 	}
 
-	bool isAlive(){
-		Health health = gameObject.GetComponent<Health> ();
-
-		if (health != null) {
-			return health.isAlive();
-		}
-
-		return true;
-	}
 }
